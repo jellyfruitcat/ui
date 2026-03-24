@@ -2551,15 +2551,16 @@
 
 return library, notifications
 
+
+
 local UIS = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
 UIS.InputBegan:Connect(function(input, gp)
     if input.KeyCode == Enum.KeyCode.RightShift then
-        -- This searches for the ScreenGui by its unique Name ("\0") or the fallback "x_x_ui"
-        for _, gui in pairs(CoreGui:GetChildren()) do
-            if gui:IsA("ScreenGui") and (gui.Name == "\0" or gui.Name == "x_x_ui") then
-                gui.Enabled = not gui.Enabled
+        for _, v in pairs(CoreGui:GetChildren()) do
+            if v:IsA("ScreenGui") and (v.Name == "\0" or v.Name:find("x_x")) then
+                v.Enabled = not v.Enabled
             end
         end
     end

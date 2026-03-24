@@ -82,16 +82,16 @@
     }
     
     local themes = {
-        preset = {
-            outline = rgb(10, 10, 10),
-            inline = rgb(35, 35, 35),
-            text = rgb(180, 180, 180),
-            text_outline = rgb(0, 0, 0),
-            background = rgb(20, 20, 20),
-            ["1"] = rgb(27, 27, 33), 
-            ["2"] = rgb(27, 27, 33),
-            ["3"] = rgb(27, 27, 33),
-        },
+    preset = {
+        outline = rgb(10, 10, 10),
+        inline = rgb(35, 35, 35),
+        text = rgb(180, 180, 180),
+        text_outline = rgb(0, 0, 0),
+        background = rgb(20, 20, 20),
+        ["1"] = hex("#245771"), -- Change this hex for the first color
+        ["2"] = hex("#215D63"), -- Change this hex for the middle color
+        ["3"] = hex("#1E6453"), -- Change this hex for the last color
+    },
 
         utility = {
             inline = {

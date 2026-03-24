@@ -2553,17 +2553,3 @@ return library, notifications
 
 
 
-local UIS = game:GetService("UserInputService")
-local CoreGui = game:GetService("CoreGui")
-
-UIS.InputBegan:Connect(function(input, gp)
-    if input.KeyCode == Enum.KeyCode.RightShift then
-        for _, v in pairs(CoreGui:GetChildren()) do
-            if v:IsA("ScreenGui") and (v.Name == "\0" or v.Name:find("x_x")) then
-                v.Enabled = not v.Enabled
-            end
-        end
-    end
-end)
-
-

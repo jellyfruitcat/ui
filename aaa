@@ -560,6 +560,15 @@
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
+
+                local menu_visible = true
+                library:connection(uis.InputBegan, function(input, gp)
+                    if not gp and input.KeyCode == Enum.KeyCode.RightShift then
+                        menu_visible = not menu_visible
+                        window_outline.Visible = menu_visible
+                    end
+                end)
+
                 
                 local ui_title = library:create("TextLabel", {
                     FontFace = fonts["TahomaBold"];
@@ -2488,7 +2497,6 @@
                 section:button({name = "Delete", callback = function() delfile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg")  library:update_config_list() end})
 
                 local section = main:column({}):section({name = "Other", size = 1, default = true})
-                section:keybind({name = "Menu bind", callback = function(bool) window.toggle_menu(bool) end, default = true})
                 section:colorpicker({name = "Gradient 1", callback = function(color)                    
                     library:update_theme("1", color)
 

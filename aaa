@@ -88,9 +88,9 @@
             text = rgb(180, 180, 180),
             text_outline = rgb(0, 0, 0),
             background = rgb(20, 20, 20),
-            ["1"] = hex("#245771"), 
-            ["2"] = hex("#215D63"),
-            ["3"] = hex("#1E6453"),
+            ["1"] = rgb(27, 27, 33), 
+            ["2"] = rgb(27, 27, 33),
+            ["3"] = rgb(27, 27, 33),
         },
 
         utility = {
@@ -2281,7 +2281,7 @@
                 --
 
                 -- Functions 
-                    function cfg.modify_mode_color(path) -- ts so frikin tuff 💀
+                    function cfg.modify_mode_color(path) 
                         for _, v in cfg.hold_instances do 
                             v.TextColor3 = rgb(170, 170, 170)
                         end
@@ -2351,12 +2351,7 @@
                         local _text = tostring(cfg.key) ~= "Enums" and (keys[cfg.key] or tostring(cfg.key):gsub("Enum.", "")) or nil
                         local __text = _text and (tostring(_text):gsub("KeyCode.", ""):gsub("UserInputType.", ""))
                         
-                        text.Text = " ".. __text .." "
-
-                        -- if keybind_list_text then
-                        --     keybind_list_text.Text = "[ ".. __text  .." ] ".. cfg.name ..":".. string.lower(cfg.mode) .."";
-                        --     keybind_list_text.Visible = cfg.active
-                        -- end
+                        text.Text = " ".. (__text or "...") .." "
                     end
 
                     function cfg.set_visible(bool)
@@ -2372,8 +2367,9 @@
                         task.wait()
                         text.Text = "..."	
 
-                        cfg.binding = library:connection(uis.InputBegan, function(keycode, game_event)  
-                            cfg.set(keycode.KeyCode)
+                        cfg.binding = library:connection(uis.InputBegan, function(input)  
+                            local key = input.KeyCode == Enum.KeyCode.Unknown and input.UserInputType or input.KeyCode
+                            cfg.set(key)
 
                             cfg.binding:Disconnect() 
                             cfg.binding = nil
@@ -2387,161 +2383,159 @@
                     end)
 
                     library:connection(uis.InputBegan, function(input, game_event) 
-                        if not game_event then 
-                            if input.KeyCode == cfg.key then 
-                                if cfg.mode == "Toggle" then 
-                                    cfg.active = not cfg.active
-                                    cfg.set(cfg.active)
-                                elseif cfg.mode == "Hold" then 
-                                    cfg.set(true)
-                                end
+                        local key = input.KeyCode == Enum.KeyCode.Unknown and input.UserInputType or input.KeyCode
+                        
+                        if key == cfg.key then 
+                            if cfg.mode == "Toggle" then 
+                                cfg.active = not cfg.active
+                                cfg.set(cfg.active)
+                            elseif cfg.mode == "Hold" then 
+                                cfg.set(true)
                             end
                         end
                     end)
 
                     library:connection(uis.InputEnded, function(input, game_event) 
-                        if game_event then 
-                            return 
-                        end 
+                        local key = input.KeyCode == Enum.KeyCode.Unknown and input.UserInputType or input.KeyCode
 
-                        local selected_key = input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode or input.UserInputType
-
-                        if selected_key == cfg.key then
+                        if key == cfg.key then
                             if cfg.mode == "Hold" then 
                                 cfg.set(false)
                             end
                         end
 
                         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                            if not (library:mouse_in_frame(keybind_holder) or library:mouse_in_frame(accent)) then 
-                                cfg.open = false
-                                cfg.set_visible(false)
-                            end
-                        end
-                    end)
-                --
+                            if not (library:mouse_in_frame(keybind_holder) or library:mouse_in
+_frame(accent)) then
+cfg.open = false
+cfg.set_visible(false)
+end
+end
+end)
+--
 
-                config_flags[cfg.flag] = cfg.set
-                cfg.set({mode = cfg.mode, active = cfg.active, key = cfg.key})
+Text
+            config_flags[cfg.flag] = cfg.set
+            cfg.set({mode = cfg.mode, active = cfg.active, key = cfg.key})
 
-                return setmetatable(cfg, library)
-            end
+            return setmetatable(cfg, library)
+        end
 
-            function library:button(options) 
-                local cfg = {
-                    name = options.name or "button",
-                    callback = options.callback or function() end,
-                }
+        function library:button(options) 
+            local cfg = {
+                name = options.name or "button",
+                callback = options.callback or function() end,
+            }
+            
+            -- Instances 
+                local frame = library:create("TextButton", {
+                    AnchorPoint = vec2(1, 0);
+                    Text = "";
+                    AutoButtonColor = false;
+                    Parent = self.elements;
+                    Position = dim2(1, 0, 0, 0);
+                    BorderColor3 = rgb(0, 0, 0);
+                    Size = dim2(1, 0, 0, 16);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = themes.preset[tostring(self.count)]
+                }); library:apply_theme(frame, tostring(self.count), "BackgroundColor3")
                 
-                -- Instances 
-                    local frame = library:create("TextButton", {
-                        AnchorPoint = vec2(1, 0);
-                        Text = "";
-                        AutoButtonColor = false;
-                        Parent = self.elements;
-                        Position = dim2(1, 0, 0, 0);
-                        BorderColor3 = rgb(0, 0, 0);
-                        Size = dim2(1, 0, 0, 16);
-                        BorderSizePixel = 0;
-                        BackgroundColor3 = themes.preset[tostring(self.count)]
-                    }); library:apply_theme(frame, tostring(self.count), "BackgroundColor3")
-                    
-                    local frame_inline = library:create("Frame", {
-                        Parent = frame;
-                        Position = dim2(0, 1, 0, 1);
-                        BorderColor3 = rgb(0, 0, 0);
-                        Size = dim2(1, -2, 1, -2);
-                        BorderSizePixel = 0;
-                        BackgroundColor3 = themes.preset.inline
-                    }); library:apply_theme(frame_inline, "inline", "BackgroundColor3")
-                    
-                    local text = library:create("TextLabel", {
-                        FontFace = fonts["ProggyClean"];
-                        TextColor3 = rgb(255, 255, 255);
-                        BorderColor3 = rgb(0, 0, 0);
-                        Text = cfg.name;
-                        Parent = frame;
-                        Size = dim2(1, 0, 1, 0);
-                        BackgroundTransparency = 1;
-                        Position = dim2(0, 1, 0, 1);
-                        BorderSizePixel = 0;
-                        AutomaticSize = Enum.AutomaticSize.X;
-                        TextSize = 12;
-                        BackgroundColor3 = rgb(255, 255, 255)
-                    });
-                -- 
-
-                -- Connections 
-                    frame.MouseButton1Click:Connect(function()
-                        cfg.callback()
-                    end)
-                --
+                local frame_inline = library:create("Frame", {
+                    Parent = frame;
+                    Position = dim2(0, 1, 0, 1);
+                    BorderColor3 = rgb(0, 0, 0);
+                    Size = dim2(1, -2, 1, -2);
+                    BorderSizePixel = 0;
+                    BackgroundColor3 = themes.preset.inline
+                }); library:apply_theme(frame_inline, "inline", "BackgroundColor3")
                 
-                return setmetatable(cfg, library)
-            end 
+                local text = library:create("TextLabel", {
+                    FontFace = fonts["ProggyClean"];
+                    TextColor3 = rgb(255, 255, 255);
+                    BorderColor3 = rgb(0, 0, 0);
+                    Text = cfg.name;
+                    Parent = frame;
+                    Size = dim2(1, 0, 1, 0);
+                    BackgroundTransparency = 1;
+                    Position = dim2(0, 1, 0, 1);
+                    BorderSizePixel = 0;
+                    AutomaticSize = Enum.AutomaticSize.X;
+                    TextSize = 12;
+                    BackgroundColor3 = rgb(255, 255, 255)
+                });
+            -- 
 
-            function library:init_config(window) 
-                local textbox;
-                local main = window:tab({name = "Configs"})
-                local section = main:column({}):section({name = "Settings", size = 1, default = true})
-                config_holder = section:dropdown({name = "Configs", options = {"Report", "This", "Error", "To", "Finobe"}, callback = function(option) if textbox then textbox.set(option) end end, flag = "config_name_list"}); library:update_config_list()
-                textbox = section:textbox({name = "Config name:", flag = "config_name_text"})
-                section:button({name = "Save", callback = function() writefile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg", library:get_config()) library:update_config_list() end}) 
-                section:button({name = "Load", callback = function() library:load_config(readfile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg"))  library:update_config_list() end})
-                section:button({name = "Delete", callback = function() delfile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg")  library:update_config_list() end})
+            -- Connections 
+                frame.MouseButton1Click:Connect(function()
+                    cfg.callback()
+                end)
+            --
+            
+            return setmetatable(cfg, library)
+        end 
 
-                local section = main:column({}):section({name = "Other", size = 1, default = true})
-                section:keybind({name = "Menu bind", callback = function(bool) window.toggle_menu(bool) end, default = true})
-                section:colorpicker({name = "Gradient 1", callback = function(color)                    
-                    library:update_theme("1", color)
+        function library:init_config(window) 
+            local textbox;
+            local main = window:tab({name = "Configs"})
+            local section = main:column({}):section({name = "Settings", size = 1, default = true})
+            config_holder = section:dropdown({name = "Configs", options = {"Report", "This", "Error", "To", "Finobe"}, callback = function(option) if textbox then textbox.set(option) end end, flag = "config_name_list"}); library:update_config_list()
+            textbox = section:textbox({name = "Config name:", flag = "config_name_text"})
+            section:button({name = "Save", callback = function() writefile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg", library:get_config()) library:update_config_list() end}) 
+            section:button({name = "Load", callback = function() library:load_config(readfile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg"))  library:update_config_list() end})
+            section:button({name = "Delete", callback = function() delfile(library.directory .. "/configs/" .. flags["config_name_text"] .. ".cfg")  library:update_config_list() end})
 
-                    library.gradient.Color = rgbseq{
-                        rgbkey(0, themes.preset["1"]), 
-                        rgbkey(0.5, themes.preset["2"]),
-                        rgbkey(1, themes.preset["3"]),
-                    };
+            local section = main:column({}):section({name = "Other", size = 1, default = true})
+            section:keybind({name = "Menu bind", callback = function(bool) window.toggle_menu(bool) end, default = true})
+            section:colorpicker({name = "Gradient 1", callback = function(color)                    
+                library:update_theme("1", color)
 
-                    library.watermark_gradient.Color = rgbseq{
-                        rgbkey(0, themes.preset["1"]), 
-                        rgbkey(0.5, themes.preset["2"]),
-                        rgbkey(1, themes.preset["3"]),
-                    };
-                end, color = themes.preset["1"]})
-                section:colorpicker({name = "Gradient 2", callback = function(color)
-                    library:update_theme("2", color)
+                library.gradient.Color = rgbseq{
+                    rgbkey(0, themes.preset["1"]), 
+                    rgbkey(0.5, themes.preset["2"]),
+                    rgbkey(1, themes.preset["3"]),
+                };
 
-                    library.gradient.Color = rgbseq{
-                        rgbkey(0, themes.preset["1"]), 
-                        rgbkey(0.5, themes.preset["2"]),
-                        rgbkey(1, themes.preset["3"]),
-                    };
+                library.watermark_gradient.Color = rgbseq{
+                    rgbkey(0, themes.preset["1"]), 
+                    rgbkey(0.5, themes.preset["2"]),
+                    rgbkey(1, themes.preset["3"]),
+                };
+            end, color = themes.preset["1"]})
+            section:colorpicker({name = "Gradient 2", callback = function(color)
+                library:update_theme("2", color)
 
-                    library.watermark_gradient.Color = rgbseq{
-                        rgbkey(0, themes.preset["1"]), 
-                        rgbkey(0.5, themes.preset["2"]),
-                        rgbkey(1, themes.preset["3"]),
-                    };
-                end, color = themes.preset["2"]})
-                section:colorpicker({name = "Gradient 3", callback = function(color)
-                    library:update_theme("3", color)
+                library.gradient.Color = rgbseq{
+                    rgbkey(0, themes.preset["1"]), 
+                    rgbkey(0.5, themes.preset["2"]),
+                    rgbkey(1, themes.preset["3"]),
+                };
 
-                    library.gradient.Color = rgbseq{
-                        rgbkey(0, themes.preset["1"]), 
-                        rgbkey(0.5, themes.preset["2"]),
-                        rgbkey(1, themes.preset["3"]),
-                    };
+                library.watermark_gradient.Color = rgbseq{
+                    rgbkey(0, themes.preset["1"]), 
+                    rgbkey(0.5, themes.preset["2"]),
+                    rgbkey(1, themes.preset["3"]),
+                };
+            end, color = themes.preset["2"]})
+            section:colorpicker({name = "Gradient 3", callback = function(color)
+                library:update_theme("3", color)
 
-                    library.watermark_gradient.Color = rgbseq{
-                        rgbkey(0, themes.preset["1"]), 
-                        rgbkey(0.5, themes.preset["2"]),
-                        rgbkey(1, themes.preset["3"]),
-                    };
-                end, color = themes.preset["3"]})
+                library.gradient.Color = rgbseq{
+                    rgbkey(0, themes.preset["1"]), 
+                    rgbkey(0.5, themes.preset["2"]),
+                    rgbkey(1, themes.preset["3"]),
+                };
 
-                main:column({})
-            end
-        -- 
+                library.watermark_gradient.Color = rgbseq{
+                    rgbkey(0, themes.preset["1"]), 
+                    rgbkey(0.5, themes.preset["2"]),
+                    rgbkey(1, themes.preset["3"]),
+                };
+            end, color = themes.preset["3"]})
+
+            main:column({})
+        end
     -- 
 -- 
+--
 
 return library, notifications

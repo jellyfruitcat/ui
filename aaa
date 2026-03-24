@@ -2550,3 +2550,14 @@
 -- 
 
 return library, notifications
+
+Paste this at the very bottom of your script:
+local UIS = game:GetService("UserInputService")
+
+UIS.InputBegan:Connect(function(input, gp)
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        if getgenv().library and getgenv().library.gui then
+            getgenv().library.gui.Enabled = not getgenv().library.gui.Enabled
+        end
+    end
+end)

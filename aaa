@@ -2551,7 +2551,6 @@
 
 return library, notifications
 
-Paste this at the very bottom of your script:
 local UIS = game:GetService("UserInputService")
 
 UIS.InputBegan:Connect(function(input, gp)

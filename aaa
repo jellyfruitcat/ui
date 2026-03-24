@@ -550,6 +550,14 @@
 
                 library:resizify(window_outline)
                 library:draggify(window_outline)
+
+                local menu_visible = true
+                library:connection(uis.InputBegan, function(input, gp)
+                    if not gp and input.KeyCode == Enum.KeyCode.RightShift then
+                        menu_visible = not menu_visible
+                        window_outline.Visible = menu_visible
+                    end
+                end)
                 
                 local title_holder = library:create("Frame", {
                     Parent = window_outline;
@@ -560,14 +568,6 @@
                     BorderSizePixel = 0;
                     BackgroundColor3 = rgb(0, 0, 0)
                 });
-
-                local menu_visible = true
-                library:connection(uis.InputBegan, function(input, gp)
-                    if not gp and input.KeyCode == Enum.KeyCode.RightShift then
-                        menu_visible = not menu_visible
-                        window_outline.Visible = menu_visible
-                    end
-                end)
 
                 
                 local ui_title = library:create("TextLabel", {
